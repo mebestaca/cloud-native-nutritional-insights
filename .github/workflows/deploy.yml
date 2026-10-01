@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build-test-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,8 +28,22 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t diet-analysis:latest ./task4
+          docker build \
+            -t marcedisonestaca/diet-analysis:latest \
+            ./task4
 
       - name: Run Docker container
         run: |
-          docker run --name diet-analysis-test diet-analysis:latest
+          docker run \
+            --name diet-analysis-test \
+            marcedisonestaca/diet-analysis:latest
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Docker image
+        run: |
+          docker push marcedisonestaca/diet-analysis:latest
