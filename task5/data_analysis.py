@@ -36,16 +36,14 @@ df["Cuisine_type"] = df["Cuisine_type"].str.strip().str.title()
 # Nutritional columns used for analysis
 numeric_columns = ["Protein(g)", "Carbs(g)", "Fat(g)"]
 
-# Convert all nutritional columns to numeric at once
-df[numeric_columns] = df[numeric.columns].apply(
-    pd.to_numeric,
-    errors="coerce"
-)
+# Make sure nutritional columns contain numeric data.
+# Invalid values are converted to NaN.
+for column in numeric_columns:
+    df[column] = pd.to_numeric(df[column], errors="coerce")
 
-# Fill all missing nutritional values in one vectorized operation
-df[numeric_columns] = df[numeric_columns].fillna(
-    df[numeric.columns].mean()
-)
+# Replace missing nutritional values with the mean of each column
+for column in numeric_columns:
+    df[column] = df[column].fillna(df[column].mean())
 
 print("\n===== MISSING VALUES AFTER CLEANING =====")
 print(df[numeric_columns].isnull().sum())
